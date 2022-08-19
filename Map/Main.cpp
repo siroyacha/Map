@@ -183,7 +183,7 @@ int main()
 		public:
 			string GetKey() { return Key; }
 			void SetKey(const string& _key) { Key = _key; }
-			//void SetTarget(const object& _Target) { Target = _Target; }
+			void SetTarget(object* _Target) { Target = _Target; }
 			Vector3 GetPosition()const { return Position; }
 			void SetPosition(const float& _x, const float& _y) { Position = Vector3(_x, _y); }
 		};
@@ -191,6 +191,44 @@ int main()
 		Player->SetPosition(25.0f, 25.0f);
 
 		multimap<float, object*> ObjectList;
+
+
+		for (int i = 0; i < 20; ++i)
+		{
+			// ** 색체 생성
+			object* pObj = new object;
+
+			// ** 객체 초기화
+			pObj->Initialize();
+
+			pObj->SetTarget(Player);
+
+			// ** "Enemy" 값으로 객체 이름을 셋
+			pObj->SetKey("Enemy");
+
+
+			// ** 삼각 함수
+			float X = pObj->GetPosition().x - Player->GetPosition().x;
+			float Y = pObj->GetPosition().y - Player->GetPosition().y;
+
+			float D = sqrt((X * X) + (Y * Y));
+
+
+			// ** 거리를 키값으로 사용
+			ObjectList.insert(make_pair(D, pObj));
+		}
+
+		// ** 출력
+		for (multimap<float, object*>::iterator iter = ObjectList.begin();
+			iter != ObjectList.end(); ++iter)
+		{
+			cout << "Player 와의 거리 : " << iter->first << endl;
+			iter->second->Render();
+		}
+
+		// ** Player와 제일 가까운 Enemy를 Target로 설정.
+		multimap<float, object*>::iterator iter = ObjectList.begin();
+		Player->SetTarget((*iter).second);
 	}
 
 
